@@ -18,12 +18,7 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "typeRoots": ["./node_modules/@types"],
-    "esModuleInterop": true,
-    "baseUrl": "./",
-    "paths": {
-      "/opt/nodejs/pino": ["src/layers/pino/nodejs/pino.ts"],
-      "/opt/nodejs/logger": ["src/utils/logger/nodejs/logger.ts"]
-    }
+    "esModuleInterop": true
   },
   "exclude": ["node_modules", "cdk.out"]
 }

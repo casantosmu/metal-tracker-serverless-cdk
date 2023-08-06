@@ -1,6 +1,6 @@
 import { Handler, DynamoDBStreamHandler } from "aws-lambda";
-import { lambdaRequestTracker } from "/opt/nodejs/pino";
-import { logger } from "/opt/nodejs/logger";
+import { lambdaRequestTracker } from "pino-lambda";
+import { logger } from "../utils/logger/logger";
 
 const withRequest = lambdaRequestTracker();
 
