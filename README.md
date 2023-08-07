@@ -48,6 +48,7 @@ The application consists of three AWS CDK stacks:
 The application uses environment variables for configuration. Make sure to set the following environment variables:
 
 - `SEND_EMAIL_ADDRESS`: The email address to which new album review notifications will be sent.
+- `EMAIL_ADDRESS_METRIC_ERRORS`: The email address to which metric errors will be sent for monitoring purposes.
 
 ## Usage
 

@@ -7,6 +7,8 @@ import {
   aws_lambda_nodejs as nodejs,
   aws_sns as sns,
   aws_sns_subscriptions as subscriptions,
+  aws_cloudwatch as cloudwatch,
+  aws_cloudwatch_actions as actions,
 } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import path from "path";
@@ -23,6 +25,7 @@ const getEmailAddressEnv = () => {
 
 type SendMailLambdaStackProps = {
   table: dynamodb.Table;
+  errorsMetricTopic: sns.Topic;
 } & cdk.StackProps;
 
 export class SendMailLambdaStack extends cdk.Stack {
@@ -56,5 +59,21 @@ export class SendMailLambdaStack extends cdk.Stack {
     );
 
     topic.grantPublish(lambdaFn);
+
+    const metricErrorsAlarm = new cloudwatch.Alarm(
+      this,
+      "metric-errors-alarm",
+      {
+        metric: lambdaFn.metricErrors(),
+        threshold: 1,
+        evaluationPeriods: 1,
+        comparisonOperator:
+          cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      }
+    );
+
+    metricErrorsAlarm.addAlarmAction(
+      new actions.SnsAction(props.errorsMetricTopic)
+    );
   }
 }

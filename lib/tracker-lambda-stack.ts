@@ -6,12 +6,16 @@ import {
   aws_dynamodb as dynamodb,
   aws_events as event,
   aws_events_targets as target,
+  aws_cloudwatch as cloudwatch,
+  aws_sns as sns,
+  aws_cloudwatch_actions as actions,
 } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import path from "path";
 
 type TrackerLambdaStackProps = {
   table: dynamodb.Table;
+  errorsMetricTopic: sns.Topic;
 } & cdk.StackProps;
 
 export class TrackerLambdaStack extends cdk.Stack {
@@ -34,5 +38,21 @@ export class TrackerLambdaStack extends cdk.Stack {
     });
 
     props.table.grantReadWriteData(lambdaFn);
+
+    const metricErrorsAlarm = new cloudwatch.Alarm(
+      this,
+      "metric-errors-alarm",
+      {
+        metric: lambdaFn.metricErrors(),
+        threshold: 1,
+        evaluationPeriods: 1,
+        comparisonOperator:
+          cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+      }
+    );
+
+    metricErrorsAlarm.addAlarmAction(
+      new actions.SnsAction(props.errorsMetricTopic)
+    );
   }
 }
