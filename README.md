@@ -17,7 +17,7 @@ To get started with this project, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/casantosmu/metal-tracker.git
+   git clone https://github.com/casantosmu/metal-tracker-serverless-cdk.git
    cd metal-tracker
    ```
 
