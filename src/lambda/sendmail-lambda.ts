@@ -1,6 +1,6 @@
-import { Handler, DynamoDBStreamHandler } from "aws-lambda";
+import { DynamoDBStreamHandler } from "aws-lambda";
 import { lambdaRequestTracker } from "pino-lambda";
-import { logger } from "../utils/logger/logger";
+import { logger } from "../utils/logger";
 import AWS from "aws-sdk";
 import { z } from "zod";
 
@@ -22,10 +22,10 @@ const metalTrackerTableEventRecordSchema = z.object({
   }),
 });
 
-const withRequest = lambdaRequestTracker();
+const loggerWithRequest = lambdaRequestTracker();
 
 export const handler: DynamoDBStreamHandler = async (event, context) => {
-  withRequest(event, context);
+  loggerWithRequest(event, context);
 
   const snsPromises = event.Records.map(async (record) => {
     const data = metalTrackerTableEventRecordSchema.parse(record);
@@ -39,7 +39,7 @@ export const handler: DynamoDBStreamHandler = async (event, context) => {
 
     const blogName = data.dynamodb.Keys.PK.S;
 
-    const emailSubject = "Metal Tracker - New album review: " + title;
+    const emailSubject = `Metal Tracker - New album review: ${title}`;
     const emailMessage = `A new album review has been published on ${blogName} \n\nTitle: ${title}\nDate: ${date}\nSummary: ${summary}\nLink: ${link}`;
 
     const params = {
