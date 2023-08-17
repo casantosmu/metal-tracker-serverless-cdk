@@ -25,7 +25,7 @@ export class TrackerLambdaStack extends cdk.Stack {
     const lambdaFn = new nodejs.NodejsFunction(this, "tracker-lambda", {
       entry: path.join("src", "lambda", "tracker-lambda.ts"),
       runtime: lambda.Runtime.NODEJS_18_X,
-      timeout: cdk.Duration.seconds(10),
+      timeout: cdk.Duration.seconds(5),
       logRetention: logs.RetentionDays.TWO_WEEKS,
       environment: {
         METAL_TRACKER_TABLE_NAME: props.table.tableName,
