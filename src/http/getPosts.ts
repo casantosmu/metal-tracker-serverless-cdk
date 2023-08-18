@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { getDateDaysAgo } from "../utils/date";
 import { logger } from "../utils/logger";
-import { buildUrl } from "../utils/http";
+import { fetcher } from "../utils/http";
 import { removeHtml } from "../utils/string";
 
 const wordPressConstants = {
@@ -41,43 +41,28 @@ const getAngryMetalGuyPosts = async () => {
     tags: tags.progressiveMetal,
   };
 
-  const endpoint = buildUrl(baseUrl, {
+  const posts = await fetcher.get(baseUrl, {
     path: jsonV2PostsPath,
     params,
+    zodSchema: getPostsWordPressV2ResponseSchema,
   });
 
-  logger.info(`Fetching data from: ${endpoint}`);
-
-  const response = await fetch(endpoint);
-  const data = (await response.json()) as unknown;
-
-  if (!response.ok) {
-    const stringify = JSON.stringify(data, null, 2);
-    throw new Error(`Request failed '${response.statusText}': ${stringify}`);
-  }
-
-  const parsedData = getPostsWordPressV2ResponseSchema
-    .parse(data)
-    .map(
-      ({
-        id,
-        date,
-        link,
-        title: { rendered: title },
-        excerpt: { rendered: summary },
-      }) => ({
-        blogName,
-        id,
-        date,
-        link,
-        title: removeHtml(title),
-        summary: removeHtml(summary),
-      })
-    );
-
-  logger.info({ data: parsedData }, "Fetch data");
-
-  return parsedData;
+  return posts.map(
+    ({
+      id,
+      date,
+      link,
+      title: { rendered: title },
+      excerpt: { rendered: summary },
+    }) => ({
+      blogName,
+      id,
+      date,
+      link,
+      title: removeHtml(title),
+      summary: removeHtml(summary),
+    })
+  );
 };
 
 export const getPosts = async () => getAngryMetalGuyPosts();
