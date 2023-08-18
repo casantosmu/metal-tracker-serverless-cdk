@@ -1,10 +1,14 @@
 import { stripHtml } from "string-strip-html";
 
-export const getQueryStringsFromObject = (
-  queryStrings: Record<string, string | number>
-) =>
-  Object.entries(queryStrings)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
+type BuildUrlOptions = {
+  path: string;
+  params: Record<string, string>;
+};
+
+export const buildUrl = (baseUrl: string, options: BuildUrlOptions) => {
+  const url = new URL(options.path, baseUrl);
+  url.search = new URLSearchParams(options.params).toString();
+  return url;
+};
 
 export const getStringWithoutHtml = (html: string) => stripHtml(html).result;

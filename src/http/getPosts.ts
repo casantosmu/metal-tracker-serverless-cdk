@@ -1,10 +1,7 @@
 import { z } from "zod";
 import { getDateDaysAgo } from "../utils/date";
 import { logger } from "../utils/logger";
-import {
-  getQueryStringsFromObject,
-  getStringWithoutHtml,
-} from "../utils/string";
+import { buildUrl, getStringWithoutHtml } from "../utils/string";
 
 const wordPressConstants = {
   maxPerPage: 100,
@@ -29,33 +26,34 @@ const angryMetalGuyConstants = {
   },
 };
 
-const fetchAngryMetalGuyPosts = async () => {
+const getAngryMetalGuyPosts = async () => {
   const { maxPerPage, jsonV2PostsPath } = wordPressConstants;
   const { blogName, baseUrl, tags } = angryMetalGuyConstants;
 
-  const queryStrings = getQueryStringsFromObject({
-    page: 1,
+  const params = {
+    page: "1",
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    per_page: maxPerPage,
+    per_page: maxPerPage.toString(),
     order: "desc",
     orderby: "date",
     after: getDateDaysAgo(1).toISOString(),
-    tags: tags.progressiveMetal,
-  });
+    tags: tags.progressiveMetal.toString(),
+  };
 
-  const endpoint = `${baseUrl}${jsonV2PostsPath}?${queryStrings}`;
+  const endpoint = buildUrl(baseUrl, {
+    path: jsonV2PostsPath,
+    params,
+  }).toString();
 
   logger.info(`Fetching data from: ${endpoint}`);
 
   const response = await fetch(endpoint);
+  const data = (await response.json()) as unknown;
 
   if (!response.ok) {
-    throw new Error(
-      `Request to '${endpoint}' failed with status: '${response.status}'`
-    );
+    const stringify = JSON.stringify(data, null, 2);
+    throw new Error(`Request failed '${response.statusText}': ${stringify}`);
   }
-
-  const data = (await response.json()) as unknown;
 
   const parsedData = getPostsWordPressV2ResponseSchema
     .parse(data)
@@ -81,4 +79,4 @@ const fetchAngryMetalGuyPosts = async () => {
   return parsedData;
 };
 
-export const fetchPosts = async () => fetchAngryMetalGuyPosts();
+export const getPosts = async () => getAngryMetalGuyPosts();

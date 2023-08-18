@@ -6,7 +6,7 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { logger } from "../utils/logger";
-import { fetchPosts } from "../http/posts";
+import { getPosts } from "../http/getPosts";
 
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
@@ -19,7 +19,7 @@ export const handler: EventBridgeHandler<string, unknown, unknown> = async (
 ) => {
   loggerWithRequest(event, context);
 
-  const posts = await fetchPosts();
+  const posts = await getPosts();
 
   const putPromises = posts.map(
     async ({ blogName, id, date, link, title, summary }) => {
