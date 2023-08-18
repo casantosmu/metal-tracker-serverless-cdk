@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { getDateDaysAgo } from "../utils/date";
 import { logger } from "../utils/logger";
-import { buildUrl, getStringWithoutHtml } from "../utils/string";
+import { buildUrl } from "../utils/http";
+import { removeHtml } from "../utils/string";
 
 const wordPressConstants = {
   maxPerPage: 100,
@@ -31,19 +32,19 @@ const getAngryMetalGuyPosts = async () => {
   const { blogName, baseUrl, tags } = angryMetalGuyConstants;
 
   const params = {
-    page: "1",
+    page: 1,
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    per_page: maxPerPage.toString(),
+    per_page: maxPerPage,
     order: "desc",
     orderby: "date",
     after: getDateDaysAgo(1).toISOString(),
-    tags: tags.progressiveMetal.toString(),
+    tags: tags.progressiveMetal,
   };
 
   const endpoint = buildUrl(baseUrl, {
     path: jsonV2PostsPath,
     params,
-  }).toString();
+  });
 
   logger.info(`Fetching data from: ${endpoint}`);
 
@@ -69,8 +70,8 @@ const getAngryMetalGuyPosts = async () => {
         id,
         date,
         link,
-        title: getStringWithoutHtml(title),
-        summary: getStringWithoutHtml(summary),
+        title: removeHtml(title),
+        summary: removeHtml(summary),
       })
     );
 

@@ -3,6 +3,11 @@ import { lambdaRequestTracker } from "pino-lambda";
 import { logger } from "../utils/logger";
 import AWS from "aws-sdk";
 import { z } from "zod";
+import {
+  removeControlCharacters,
+  getAsciiCharacters,
+  truncateString,
+} from "../utils/string";
 
 const sns = new AWS.SNS();
 
@@ -41,11 +46,12 @@ export const handler: DynamoDBStreamHandler = async (event, context) => {
       title: { S: title },
     } = data.dynamodb.NewImage;
 
-    const emailSubject = `Metal Tracker - New album review: ${title}`.slice(
-      0,
-      snsSubjectMaxLong
-    );
-    const emailMessage = `A new album review has been published on ${blogName} \n\nTitle: ${title}\nDate: ${date}\nSummary: ${summary}\nLink: ${link}`;
+    let emailSubject = `Metal Tracker - New album review: ${title}`;
+    emailSubject = removeControlCharacters(emailSubject);
+    emailSubject = getAsciiCharacters(emailSubject);
+    emailSubject = truncateString(emailSubject, snsSubjectMaxLong);
+
+    const emailMessage = `A new album review has been published on ${blogName}\n\nTitle: ${title}\nDate: ${date}\nSummary: ${summary}\nLink: ${link}`;
 
     return { emailSubject, emailMessage };
   });

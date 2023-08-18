@@ -1,14 +1,20 @@
 import { stripHtml } from "string-strip-html";
 
-type BuildUrlOptions = {
-  path: string;
-  params: Record<string, string>;
-};
+export const removeControlCharacters = (string: string) =>
+  string
+    .split("")
+    .filter((character) => character.charCodeAt(0) > 31)
+    .join("");
 
-export const buildUrl = (baseUrl: string, options: BuildUrlOptions) => {
-  const url = new URL(options.path, baseUrl);
-  url.search = new URLSearchParams(options.params).toString();
-  return url;
-};
+export const getAsciiCharacters = (string: string) =>
+  string
+    .split("")
+    .filter((character) => character.charCodeAt(0) <= 255)
+    .join("");
 
-export const getStringWithoutHtml = (html: string) => stripHtml(html).result;
+export const removeHtml = (string: string) => stripHtml(string).result;
+
+export const truncateString = (string: string, maxLong: number, end = "...") =>
+  string.length <= maxLong
+    ? string
+    : `${string.slice(0, maxLong - end.length)}${end}`;
