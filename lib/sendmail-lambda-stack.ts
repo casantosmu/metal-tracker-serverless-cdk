@@ -34,6 +34,8 @@ export class SendMailLambdaStack extends cdk.Stack {
     lambdaFn.addEventSource(
       new eventsources.DynamoEventSource(props.table, {
         startingPosition: lambda.StartingPosition.LATEST,
+        batchSize: 1,
+        retryAttempts: 3,
         filters: [
           lambda.FilterCriteria.filter({
             eventName: lambda.FilterRule.isEqual("INSERT"),
