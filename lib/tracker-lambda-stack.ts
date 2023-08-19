@@ -18,6 +18,8 @@ type TrackerLambdaStackProps = {
   sendMailTopic: sns.Topic;
 } & cdk.StackProps;
 
+const fetchRate = 3;
+
 export class TrackerLambdaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: TrackerLambdaStackProps) {
     super(scope, id, props);
@@ -29,11 +31,12 @@ export class TrackerLambdaStack extends cdk.Stack {
       logRetention: logs.RetentionDays.TWO_WEEKS,
       environment: {
         METAL_TRACKER_TABLE_NAME: props.table.tableName,
+        FETCH_POST_IN_THE_LAST_DAYS: fetchRate.toString(),
       },
     });
 
     new event.Rule(this, "tracker-schedule", {
-      schedule: event.Schedule.rate(cdk.Duration.days(1)),
+      schedule: event.Schedule.rate(cdk.Duration.days(fetchRate)),
       targets: [new target.LambdaFunction(lambdaFn)],
     });
 
