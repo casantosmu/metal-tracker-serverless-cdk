@@ -3,10 +3,7 @@ import { logger } from "./logger";
 
 type UrlOptions = {
   path?: string;
-  params?: Record<
-    string,
-    string | number | boolean | (string | number | boolean)[]
-  >;
+  params?: Record<string, string | number>;
 };
 
 const buildUrl = (url: string, options?: UrlOptions) => {
@@ -14,11 +11,7 @@ const buildUrl = (url: string, options?: UrlOptions) => {
 
   if (options?.params) {
     Object.entries(options.params).forEach(([key, value]) => {
-      const values = Array.isArray(value) ? value : [value];
-
-      values.forEach((val) => {
-        result.searchParams.append(key, val.toString());
-      });
+      result.searchParams.append(key, value.toString());
     });
   }
 

@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { getDateDaysAgo } from "../utils/date";
-import { logger } from "../utils/logger";
 import { fetcher } from "../utils/http";
 import { removeHtml } from "../utils/string";
 
@@ -25,11 +24,14 @@ const angryMetalGuyConstants = {
   tags: {
     progressiveMetal: 8161,
   },
+  categories: {
+    review: 13,
+  },
 };
 
 const getAngryMetalGuyPosts = async () => {
   const { maxPerPage, jsonV2PostsPath } = wordPressConstants;
-  const { blogName, baseUrl, tags } = angryMetalGuyConstants;
+  const { blogName, baseUrl, tags, categories } = angryMetalGuyConstants;
 
   const params = {
     page: 1,
@@ -39,6 +41,7 @@ const getAngryMetalGuyPosts = async () => {
     orderby: "date",
     after: getDateDaysAgo(1).toISOString(),
     tags: tags.progressiveMetal,
+    categories: categories.review,
   };
 
   const posts = await fetcher.get(baseUrl, {
