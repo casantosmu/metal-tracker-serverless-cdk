@@ -15,7 +15,7 @@ import path from "path";
 
 type TrackerLambdaStackProps = {
   table: dynamodb.Table;
-  errorsMetricTopic: sns.Topic;
+  sendMailTopic: sns.Topic;
 } & cdk.StackProps;
 
 export class TrackerLambdaStack extends cdk.Stack {
@@ -25,7 +25,7 @@ export class TrackerLambdaStack extends cdk.Stack {
     const lambdaFn = new nodejs.NodejsFunction(this, "tracker-lambda", {
       entry: path.join("src", "lambda", "tracker-lambda.ts"),
       runtime: lambda.Runtime.NODEJS_18_X,
-      timeout: cdk.Duration.seconds(10),
+      timeout: cdk.Duration.seconds(5),
       logRetention: logs.RetentionDays.TWO_WEEKS,
       environment: {
         METAL_TRACKER_TABLE_NAME: props.table.tableName,
@@ -52,7 +52,7 @@ export class TrackerLambdaStack extends cdk.Stack {
     );
 
     metricErrorsAlarm.addAlarmAction(
-      new actions.SnsAction(props.errorsMetricTopic)
+      new actions.SnsAction(props.sendMailTopic)
     );
   }
 }

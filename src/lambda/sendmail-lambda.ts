@@ -3,8 +3,15 @@ import { lambdaRequestTracker } from "pino-lambda";
 import { logger } from "../utils/logger";
 import AWS from "aws-sdk";
 import { z } from "zod";
+import {
+  removeControlCharacters,
+  getAsciiCharacters,
+  truncateString,
+} from "../utils/string";
 
 const sns = new AWS.SNS();
+
+const snsSubjectMaxLong = 100;
 
 const metalTrackerTableEventRecordSchema = z.object({
   dynamodb: z.object({
@@ -27,8 +34,10 @@ const loggerWithRequest = lambdaRequestTracker();
 export const handler: DynamoDBStreamHandler = async (event, context) => {
   loggerWithRequest(event, context);
 
-  const snsPromises = event.Records.map(async (record) => {
+  const data = event.Records.map((record) => {
     const data = metalTrackerTableEventRecordSchema.parse(record);
+
+    const blogName = data.dynamodb.Keys.PK.S;
 
     const {
       date: { S: date },
@@ -37,11 +46,17 @@ export const handler: DynamoDBStreamHandler = async (event, context) => {
       title: { S: title },
     } = data.dynamodb.NewImage;
 
-    const blogName = data.dynamodb.Keys.PK.S;
+    let emailSubject = `Metal Tracker - New album review: ${title}`;
+    emailSubject = removeControlCharacters(emailSubject);
+    emailSubject = getAsciiCharacters(emailSubject);
+    emailSubject = truncateString(emailSubject, snsSubjectMaxLong);
 
-    const emailSubject = `Metal Tracker - New album review: ${title}`;
-    const emailMessage = `A new album review has been published on ${blogName} \n\nTitle: ${title}\nDate: ${date}\nSummary: ${summary}\nLink: ${link}`;
+    const emailMessage = `A new album review has been published on ${blogName}\n\nTitle: ${title}\nDate: ${date}\nSummary: ${summary}\nLink: ${link}`;
 
+    return { emailSubject, emailMessage };
+  });
+
+  const publishPromises = data.map(async ({ emailMessage, emailSubject }) => {
     const params = {
       Subject: emailSubject,
       Message: emailMessage,
@@ -52,5 +67,5 @@ export const handler: DynamoDBStreamHandler = async (event, context) => {
     logger.info({ result }, "Message sent successfully");
   });
 
-  await Promise.all(snsPromises);
+  await Promise.all(publishPromises);
 };

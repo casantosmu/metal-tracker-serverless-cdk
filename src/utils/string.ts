@@ -1,10 +1,20 @@
 import { stripHtml } from "string-strip-html";
 
-export const getQueryStringsFromObject = (
-  queryStrings: Record<string, string | number>
-) =>
-  Object.entries(queryStrings)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
+export const removeControlCharacters = (string: string) =>
+  string
+    .split("")
+    .filter((character) => character.charCodeAt(0) > 31)
+    .join("");
 
-export const getStringWithoutHtml = (html: string) => stripHtml(html).result;
+export const getAsciiCharacters = (string: string) =>
+  string
+    .split("")
+    .filter((character) => character.charCodeAt(0) <= 255)
+    .join("");
+
+export const removeHtml = (string: string) => stripHtml(string).result;
+
+export const truncateString = (string: string, maxLong: number, end = "...") =>
+  string.length <= maxLong
+    ? string
+    : `${string.slice(0, maxLong - end.length)}${end}`;
