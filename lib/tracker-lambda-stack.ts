@@ -15,7 +15,7 @@ import path from "path";
 
 type TrackerLambdaStackProps = {
   table: dynamodb.Table;
-  errorsMetricTopic: sns.Topic;
+  sendMailTopic: sns.Topic;
 } & cdk.StackProps;
 
 export class TrackerLambdaStack extends cdk.Stack {
@@ -52,7 +52,7 @@ export class TrackerLambdaStack extends cdk.Stack {
     );
 
     metricErrorsAlarm.addAlarmAction(
-      new actions.SnsAction(props.errorsMetricTopic)
+      new actions.SnsAction(props.sendMailTopic)
     );
   }
 }

@@ -43,13 +43,6 @@ The application consists of three AWS CDK stacks:
 
 3. `TrackerLambdaStack`: Sets up a Lambda function triggered by an EventBridge rule that fetches new metal music blog posts and adds them to the DynamoDB table.
 
-## Configuration
-
-The application uses environment variables for configuration. Make sure to set the following environment variables:
-
-- `SEND_EMAIL_ADDRESS`: The email address to which new album review notifications will be sent.
-- `EMAIL_ADDRESS_METRIC_ERRORS`: The email address to which metric errors will be sent for monitoring purposes.
-
 ## Usage
 
 After deploying the AWS CDK stack, the application will automatically start tracking metal music blog posts and sending email notifications for new album reviews.
