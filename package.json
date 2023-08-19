@@ -22,14 +22,14 @@
     "typescript": "~5.1.6"
   },
   "dependencies": {
-    "@aws-sdk/lib-dynamodb": "^3.391.0",
+    "@aws-sdk/lib-dynamodb": "^3.395.0",
     "aws-cdk-lib": "^2.92.0",
-    "aws-sdk": "^2.1439.0",
+    "aws-sdk": "^2.1440.0",
     "constructs": "^10.2.69",
     "pino": "^8.15.0",
     "pino-lambda": "^4.2.1",
     "source-map-support": "^0.5.21",
     "string-strip-html": "^8.5.0",
-    "zod": "^3.22.1"
+    "zod": "^3.22.2"
   }
 }
