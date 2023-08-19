@@ -34,7 +34,7 @@ const loggerWithRequest = lambdaRequestTracker();
 export const handler: DynamoDBStreamHandler = async (event, context) => {
   loggerWithRequest(event, context);
 
-  const data = event.Records.map((record) => {
+  const publishPromises = event.Records.map(async (record) => {
     const data = metalTrackerTableEventRecordSchema.parse(record);
 
     const blogName = data.dynamodb.Keys.PK.S;
@@ -53,10 +53,6 @@ export const handler: DynamoDBStreamHandler = async (event, context) => {
 
     const emailMessage = `A new album review has been published on ${blogName}\n\nTitle: ${title}\nDate: ${date}\nSummary: ${summary}\nLink: ${link}`;
 
-    return { emailSubject, emailMessage };
-  });
-
-  const publishPromises = data.map(async ({ emailMessage, emailSubject }) => {
     const params = {
       Subject: emailSubject,
       Message: emailMessage,

@@ -3,6 +3,10 @@ import { getDateDaysAgo } from "../utils/date";
 import { fetcher } from "../utils/http";
 import { removeHtml } from "../utils/string";
 
+const fetchPostInTheLastDays = z.coerce
+  .number()
+  .parse(process.env.FETCH_POST_IN_THE_LAST_DAYS);
+
 const wordPressConstants = {
   maxPerPage: 100,
   jsonV2PostsPath: "/wp-json/wp/v2/posts",
@@ -39,7 +43,7 @@ const getAngryMetalGuyPosts = async () => {
     per_page: maxPerPage,
     order: "desc",
     orderby: "date",
-    after: getDateDaysAgo(1).toISOString(),
+    after: getDateDaysAgo(fetchPostInTheLastDays).toISOString(),
     tags: tags.progressiveMetal,
     categories: categories.review,
   };
