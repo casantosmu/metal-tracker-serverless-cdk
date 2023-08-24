@@ -51,11 +51,11 @@ export class TrackerLambdaStack extends cdk.Stack {
         evaluationPeriods: 1,
         comparisonOperator:
           cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-      }
+      },
     );
 
     metricErrorsAlarm.addAlarmAction(
-      new actions.SnsAction(props.sendMailTopic)
+      new actions.SnsAction(props.sendMailTopic),
     );
   }
 }

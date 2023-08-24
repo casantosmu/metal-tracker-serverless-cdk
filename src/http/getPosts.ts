@@ -19,7 +19,7 @@ const getPostsWordPressV2ResponseSchema = z.array(
     link: z.string(),
     title: z.object({ rendered: z.string() }),
     excerpt: z.object({ rendered: z.string() }),
-  })
+  }),
 );
 
 const angryMetalGuyConstants = {
@@ -68,7 +68,7 @@ const getAngryMetalGuyPosts = async () => {
       link,
       title: removeHtml(title),
       summary: removeHtml(summary),
-    })
+    }),
   );
 };
 
