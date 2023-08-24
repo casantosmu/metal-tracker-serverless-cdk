@@ -41,7 +41,7 @@ export class SendMailLambdaStack extends cdk.Stack {
             eventName: lambda.FilterRule.isEqual("INSERT"),
           }),
         ],
-      })
+      }),
     );
 
     props.sendMailTopic.grantPublish(lambdaFn);
@@ -55,11 +55,11 @@ export class SendMailLambdaStack extends cdk.Stack {
         evaluationPeriods: 1,
         comparisonOperator:
           cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-      }
+      },
     );
 
     metricErrorsAlarm.addAlarmAction(
-      new actions.SnsAction(props.sendMailTopic)
+      new actions.SnsAction(props.sendMailTopic),
     );
   }
 }

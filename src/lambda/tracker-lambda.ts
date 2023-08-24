@@ -15,7 +15,7 @@ const loggerWithRequest = lambdaRequestTracker();
 
 export const handler: EventBridgeHandler<string, unknown, unknown> = async (
   event,
-  context
+  context,
 ) => {
   loggerWithRequest(event, context);
 
@@ -48,7 +48,7 @@ export const handler: EventBridgeHandler<string, unknown, unknown> = async (
 
         throw error;
       }
-    }
+    },
   );
 
   await Promise.all(putPromises);

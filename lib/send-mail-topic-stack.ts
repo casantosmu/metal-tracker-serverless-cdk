@@ -16,11 +16,11 @@ export class SendMailTopicStack extends cdk.Stack {
 
     const emailAddress = ssm.StringParameter.valueForStringParameter(
       this,
-      "SendEmailAddress"
+      "SendEmailAddress",
     );
 
     this.topic.addSubscription(
-      new subscriptions.EmailSubscription(emailAddress)
+      new subscriptions.EmailSubscription(emailAddress),
     );
   }
 }
